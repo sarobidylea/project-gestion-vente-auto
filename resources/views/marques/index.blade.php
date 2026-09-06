@@ -9,45 +9,117 @@
         margin: 0 auto;
     }
 
-    .page-header {
+    /* =========================
+       HERO
+    ========================= */
+
+    .hero {
+        position: relative;
+        min-height: 190px;
         display: flex;
-        justify-content: space-between;
         align-items: center;
-        margin-bottom: 35px;
+        overflow: hidden;
+        margin: 0 -42px 30px;
+        padding: 30px 42px;
+
+        background:
+            linear-gradient(
+                90deg,
+                #050505 25%,
+                rgba(5, 5, 5, .75) 55%,
+                rgba(40, 0, 6, .35) 100%
+            ),
+            url("{{ asset('images/fond2.jpeg') }}");
+
+        background-size: cover;
+        background-position: right center;
+        background-repeat: no-repeat;
     }
 
-    .page-header h1 {
-        font-size: 34px;
-        font-weight: 800;
+    .hero::after {
+        content: "";
+        position: absolute;
+        right: -100px;
+        top: -80px;
+        width: 600px;
+        height: 280px;
+
+        background:
+            radial-gradient(
+                ellipse,
+                rgba(255, 20, 30, .25),
+                transparent 65%
+            );
+
+        transform: rotate(-8deg);
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 2;
+    }
+
+    .breadcrumb {
+        color: #777;
+        font-size: 11px;
+        margin-bottom: 15px;
+    }
+
+    .breadcrumb span {
+        color: #ddd;
+    }
+
+    .hero h1 {
         margin: 0;
         color: #fff;
+        font-size: 36px;
+        font-weight: 800;
+        letter-spacing: -1px;
     }
 
-    .page-header p {
-        margin-top: 8px;
-        color: #888;
+    .hero h1 span {
+        color: #ed101b;
+    }
+
+    .hero p {
+        margin: 5px 0 15px;
+        color: #aaa;
         font-size: 14px;
     }
 
-    .btn-add {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        padding: 13px 20px;
-        background: #e50914;
-        color: white;
-        text-decoration: none;
-        border-radius: 8px;
-        font-weight: 700;
-        transition: .3s;
+    .hero-line {
+        width: 60px;
+        height: 3px;
+        background: #ed101b;
     }
 
-    .btn-add:hover {
-        background: #ff1a25;
+    .hero-button {
+        position: absolute;
+        z-index: 5;
+        right: 42px;
+        top: 58px;
+
+        padding: 13px 22px;
+        border-radius: 7px;
+
+        background: #ed101b;
+        color: white;
+
+        font-weight: 700;
+        font-size: 13px;
+        text-decoration: none;
+
+        transition: .2s;
+    }
+
+    .hero-button:hover {
+        background: #ff2630;
         transform: translateY(-2px);
     }
 
-    /* Messages */
+    /* =========================
+       MESSAGES
+    ========================= */
 
     .alert {
         padding: 15px 18px;
@@ -68,7 +140,9 @@
         color: #ff626a;
     }
 
-    /* Grid */
+    /* =========================
+       GRID
+    ========================= */
 
     .brands-grid {
         display: grid;
@@ -92,11 +166,16 @@
         box-shadow: 0 12px 35px rgba(229, 9, 20, .12);
     }
 
+    /* =========================
+       LOGO
+    ========================= */
+
     .brand-logo {
         height: 130px;
         display: flex;
         align-items: center;
         justify-content: center;
+
         background: #080808;
         border-radius: 10px;
         margin-bottom: 20px;
@@ -113,14 +192,21 @@
         width: 75px;
         height: 75px;
         border-radius: 50%;
+
         border: 2px solid #333;
+
         display: flex;
         align-items: center;
         justify-content: center;
+
         color: #e50914;
         font-size: 28px;
         font-weight: 800;
     }
+
+    /* =========================
+       INFORMATIONS
+    ========================= */
 
     .brand-name {
         color: white;
@@ -139,7 +225,9 @@
     .brand-count {
         margin-top: 18px;
         padding-top: 15px;
+
         border-top: 1px solid #222;
+
         color: #999;
         font-size: 13px;
     }
@@ -148,7 +236,9 @@
         color: #fff;
     }
 
-    /* Actions */
+    /* =========================
+       ACTIONS
+    ========================= */
 
     .brand-actions {
         display: flex;
@@ -159,11 +249,14 @@
     .action-btn {
         flex: 1;
         text-align: center;
+
         padding: 9px;
         border-radius: 7px;
+
         text-decoration: none;
         font-size: 12px;
         font-weight: 700;
+
         transition: .3s;
     }
 
@@ -190,10 +283,14 @@
     .delete-btn {
         border: none;
         cursor: pointer;
+
         background: #171717;
         color: #888;
+
         padding: 9px 12px;
         border-radius: 7px;
+
+        transition: .3s;
     }
 
     .delete-btn:hover {
@@ -201,10 +298,13 @@
         color: white;
     }
 
-    /* Pagination */
+    /* =========================
+       PAGINATION
+    ========================= */
 
     .pagination-container {
         margin-top: 35px;
+
         display: flex;
         justify-content: center;
     }
@@ -219,12 +319,16 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
+
         min-width: 38px;
         height: 38px;
         padding: 0 10px;
+
         border-radius: 7px;
+
         background: #111;
         border: 1px solid #252525;
+
         color: #aaa;
         text-decoration: none;
         font-size: 13px;
@@ -241,7 +345,9 @@
         color: white;
     }
 
-    /* Responsive */
+    /* =========================
+       RESPONSIVE
+    ========================= */
 
     @media (max-width: 1100px) {
         .brands-grid {
@@ -254,16 +360,35 @@
             grid-template-columns: repeat(2, 1fr);
         }
 
-        .page-header {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 20px;
+        .hero {
+            margin-left: -25px;
+            margin-right: -25px;
+            padding-left: 25px;
+            padding-right: 25px;
+        }
+
+        .hero-button {
+            position: static;
+            margin-left: auto;
         }
     }
 
     @media (max-width: 500px) {
         .brands-grid {
             grid-template-columns: 1fr;
+        }
+
+        .hero {
+            min-height: 220px;
+            align-items: flex-start;
+        }
+
+        .hero-button {
+            position: absolute;
+            left: 25px;
+            right: auto;
+            top: auto;
+            bottom: 25px;
         }
     }
 </style>
@@ -273,33 +398,60 @@
 
 <div class="brands-page">
 
-    {{-- En-tête --}}
-    <div class="page-header">
-        <div>
-            <h1>Marques automobiles</h1>
-            <p>Gérez les marques disponibles dans votre catalogue.</p>
+    {{-- =========================
+         HERO
+    ========================= --}}
+    <div class="hero">
+
+        <div class="hero-content">
+
+            <div class="breadcrumb">
+                Accueil &nbsp;›&nbsp;
+                <span>Marques</span>
+            </div>
+
+            <h1>
+                Nos <span>marques</span>
+            </h1>
+
+            <p>
+                Gérez les marques disponibles dans votre catalogue automobile.
+            </p>
+
+            <div class="hero-line"></div>
+
         </div>
 
-        <a href="{{ route('marques.create') }}" class="btn-add">
-            + Ajouter une marque
+        <a href="{{ route('marques.create') }}" class="hero-button">
+            ＋ &nbsp; Ajouter une marque
         </a>
+
     </div>
+
 
     {{-- Message succès --}}
     @if(session('success'))
+
         <div class="alert alert-success">
             ✓ {{ session('success') }}
         </div>
+
     @endif
+
 
     {{-- Message erreur --}}
     @if(session('error'))
+
         <div class="alert alert-error">
             ⚠ {{ session('error') }}
         </div>
+
     @endif
 
-    {{-- Liste des marques --}}
+
+    {{-- =========================
+         LISTE DES MARQUES
+    ========================= --}}
     <div class="brands-grid">
 
         @forelse($marques as $marque)
@@ -310,33 +462,45 @@
                 <div class="brand-logo">
 
                     @if($marque->logo)
+
                         <img
                             src="{{ asset('storage/' . $marque->logo) }}"
                             alt="{{ $marque->nom }}"
                         >
+
                     @else
+
                         <div class="logo-placeholder">
                             {{ strtoupper(substr($marque->nom, 0, 1)) }}
                         </div>
+
                     @endif
 
                 </div>
+
 
                 {{-- Nom --}}
                 <div class="brand-name">
                     {{ $marque->nom }}
                 </div>
 
+
                 {{-- Description --}}
                 <div class="brand-description">
+
                     {{ $marque->description ?: 'Aucune description disponible.' }}
+
                 </div>
+
 
                 {{-- Nombre de véhicules --}}
                 <div class="brand-count">
+
                     Véhicules :
                     <strong>{{ $marque->vehicules_count }}</strong>
+
                 </div>
+
 
                 {{-- Actions --}}
                 <div class="brand-actions">
@@ -348,6 +512,7 @@
                         Voir
                     </a>
 
+
                     <a
                         href="{{ route('marques.edit', $marque) }}"
                         class="action-btn btn-edit"
@@ -355,11 +520,13 @@
                         Modifier
                     </a>
 
+
                     <form
                         action="{{ route('marques.destroy', $marque) }}"
                         method="POST"
                         onsubmit="return confirm('Voulez-vous vraiment supprimer cette marque ?')"
                     >
+
                         @csrf
                         @method('DELETE')
 
@@ -370,6 +537,7 @@
                         >
                             🗑
                         </button>
+
                     </form>
 
                 </div>
@@ -386,6 +554,7 @@
                 border: 1px solid #202020;
                 border-radius: 14px;
             ">
+
                 <div style="font-size: 50px; margin-bottom: 15px;">
                     🏷️
                 </div>
@@ -397,17 +566,23 @@
                 <p style="color:#777;">
                     Commencez par ajouter une marque automobile.
                 </p>
+
             </div>
 
         @endforelse
 
     </div>
 
-    {{-- Pagination --}}
+
+    {{-- =========================
+         PAGINATION
+    ========================= --}}
     @if($marques->hasPages())
+
         <div class="pagination-container">
             {{ $marques->links() }}
         </div>
+
     @endif
 
 </div>
