@@ -12,6 +12,7 @@ class AuthController extends Controller
         return view('auth.login');
     }
 
+    
     public function login(Request $request)
     {
         $credentials = $request->validate([
@@ -20,6 +21,25 @@ class AuthController extends Controller
         ]);
 
         if (Auth::attempt($credentials)) {
+
+            $user = Auth::user();
+
+            // Vérifier que le compte appartient à l'administration
+            if (!in_array($user->role, [
+                'administrateur',
+                'gestionnaire',
+                'vendeur',
+            ])) {
+
+                Auth::logout();
+
+                return back()
+                    ->withErrors([
+                        'email' => 'Mot de passe ou email incorrect.',
+                    ])
+                    ->onlyInput('email');
+            }
+
             $request->session()->regenerate();
 
             return redirect()
@@ -29,10 +49,12 @@ class AuthController extends Controller
 
         return back()
             ->withErrors([
-                'email' => 'Email ou mot de passe incorrect.',
+                'email' => 'Mot de passe ou email incorrect.',
             ])
             ->onlyInput('email');
     }
+
+
 
     public function logout(Request $request)
     {

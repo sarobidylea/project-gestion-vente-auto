@@ -10,6 +10,7 @@ class Vente extends Model
     use HasFactory;
 
     protected $fillable = [
+        'numero_facture',
         'vehicule_id',
         'client_id',
         'date_vente',

@@ -27,7 +27,8 @@ class VenteController extends Controller
 
                 // Recherche sur le véhicule
                 $q->whereHas('vehicule', function ($vehiculeQuery) use ($search) {
-                    $vehiculeQuery->where('modele', 'like', '%' . $search . '%')
+                    $vehiculeQuery
+                        ->where('modele', 'like', '%' . $search . '%')
                         ->orWhereHas('marque', function ($marqueQuery) use ($search) {
                             $marqueQuery->where('nom', 'like', '%' . $search . '%');
                         });
@@ -35,11 +36,11 @@ class VenteController extends Controller
 
                 // Recherche sur le client
                 ->orWhereHas('client', function ($clientQuery) use ($search) {
-                    $clientQuery->where('nom', 'like', '%' . $search . '%')
+                    $clientQuery
+                        ->where('nom', 'like', '%' . $search . '%')
                         ->orWhere('prenom', 'like', '%' . $search . '%')
                         ->orWhere('email', 'like', '%' . $search . '%');
                 });
-
             });
         }
 
@@ -101,7 +102,9 @@ class VenteController extends Controller
         ]);
 
         // Vérifier que le véhicule est toujours disponible
-        $vehicule = Vehicule::findOrFail($validated['vehicule_id']);
+        $vehicule = Vehicule::findOrFail(
+            $validated['vehicule_id']
+        );
 
         if ($vehicule->statut !== 'Disponible') {
             return back()
@@ -110,6 +113,14 @@ class VenteController extends Controller
                     'vehicule_id' => 'Ce véhicule n’est plus disponible.'
                 ]);
         }
+
+        // Génération automatique du numéro de facture
+        $validated['numero_facture'] = 'LUX-' . date('Y') . '-' . str_pad(
+            (Vente::max('id') ?? 0) + 1,
+            6,
+            '0',
+            STR_PAD_LEFT
+        );
 
         // Création de la vente
         $vente = Vente::create($validated);
@@ -143,6 +154,20 @@ class VenteController extends Controller
 
 
     /**
+     * Afficher la facture d'une vente.
+     */
+    public function facture(Vente $vente)
+    {
+        $vente->load([
+            'vehicule.marque',
+            'client'
+        ]);
+
+        return view('ventes.facture', compact('vente'));
+    }
+
+
+    /**
      * Afficher le formulaire de modification.
      */
     public function edit(Vente $vente)
@@ -152,8 +177,7 @@ class VenteController extends Controller
             'client'
         ]);
 
-        // On récupère le véhicule de la vente actuelle
-        // + les véhicules encore disponibles.
+        // Véhicule actuel + véhicules disponibles
         $vehicules = Vehicule::with('marque')
             ->where(function ($query) use ($vente) {
                 $query->where('statut', 'Disponible')
@@ -227,13 +251,10 @@ class VenteController extends Controller
         // Si la vente est confirmée,
         // le nouveau véhicule devient vendu.
         if ($vente->statut === 'Confirmee') {
-
             $nouveauVehicule->update([
                 'statut' => 'Vendu'
             ]);
-
         } else {
-
             // Si la vente n'est pas confirmée,
             // le véhicule redevient disponible.
             $nouveauVehicule->update([

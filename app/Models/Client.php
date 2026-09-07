@@ -17,13 +17,28 @@ class Client extends Model
         'adresse',
     ];
 
+    /**
+     * Relation avec le compte utilisateur.
+     */
+    public function user()
+    {
+        return $this->hasOne(User::class);
+    }
+
+    /**
+     * Relation avec les ventes.
+     */
     public function ventes()
     {
         return $this->hasMany(Vente::class);
     }
 
+    /**
+     * Relation avec les rendez-vous.
+     */
     public function rendezVous()
     {
         return $this->hasMany(RendezVous::class);
     }
 }
+
