@@ -546,67 +546,87 @@
 
 
             {{-- =========================
-                 RIGHT
+                RIGHT
             ========================== --}}
-
             <aside class="contact-card">
 
-                <h3 class="contact-card-title">
-                    Ce véhicule vous intéresse ?
-                </h3>
+            <h3 class="contact-card-title">
+                Ce véhicule vous intéresse ?
+            </h3>
 
-                <p class="contact-card-text">
-                    Contactez LUXORA MOTORS pour obtenir davantage
-                    d'informations ou organiser une visite du véhicule.
-                </p>
-
-
-                {{-- Prendre rendez-vous --}}
-            
-                <a
-                    href="{{ auth()->check()
-                        ? route('client.rendez-vous.create', $vehicule)
-                        : route('client.login', ['redirect' => route('client.rendez-vous.create', $vehicule)])
-                    }}"
-                    class="action-button action-primary"
-                >
-                    Prendre rendez-vous
-                </a>
+            <p class="contact-card-text">
+                Contactez LUXORA MOTORS pour obtenir davantage
+                d'informations, acheter ce véhicule ou organiser
+                une visite.
+            </p>
 
 
+            {{-- =========================
+                ACHAT EN LIGNE
+            ========================== --}}
+            <a
+                href="{{ auth()->check()
+                    ? route('client.achat.checkout', $vehicule)
+                    : route('client.login', ['redirect' => route('client.achat.checkout', $vehicule)])
+                }}"
+                class="action-button action-buy"
+            >
+                Acheter ce véhicule
+            </a>
 
 
-                {{-- Connexion --}}
+            {{-- =========================
+                RENDEZ-VOUS
+            ========================== --}}
+            <a
+                href="{{ auth()->check()
+                    ? route('client.rendez-vous.create', $vehicule)
+                    : route('client.login', ['redirect' => route('client.rendez-vous.create', $vehicule)])
+                }}"
+                class="action-button action-primary"
+            >
+                Prendre rendez-vous
+            </a>
 
+
+            {{-- =========================
+                CONNEXION
+                Affiché seulement si
+                le client n'est PAS connecté
+            ========================== --}}
+            @guest
                 <a
                     href="{{ route('login') }}"
                     class="action-button action-secondary"
                 >
                     Se connecter
                 </a>
+            @endguest
 
 
-                <div class="contact-info">
+            {{-- =========================
+                INFORMATIONS
+            ========================== --}}
+            <div class="contact-info">
 
-                    <div class="contact-info-item">
-                        <span class="contact-icon">◆</span>
-                        <span>LUXORA MOTORS</span>
-                    </div>
-
-                    <div class="contact-info-item">
-                        <span class="contact-icon">◆</span>
-                        <span>Fianarantsoa · Madagascar</span>
-                    </div>
-
-                    <div class="contact-info-item">
-                        <span class="contact-icon">◆</span>
-                        <span>Véhicule disponible</span>
-                    </div>
-
+                <div class="contact-info-item">
+                    <span class="contact-icon">◆</span>
+                    <span>LUXORA MOTORS</span>
                 </div>
 
-            </aside>
+                <div class="contact-info-item">
+                    <span class="contact-icon">◆</span>
+                    <span>Fianarantsoa · Madagascar</span>
+                </div>
 
+                <div class="contact-info-item">
+                    <span class="contact-icon">◆</span>
+                    <span>Véhicule disponible</span>
+                </div>
+
+            </div>
+
+            </aside>
         </div>
 
     </main>

@@ -12,7 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('ventes', function (Blueprint $table) {
-            //
+
+            $table->string('numero_facture')
+                ->unique()
+                ->after('id');
+
         });
     }
 
@@ -22,7 +26,11 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('ventes', function (Blueprint $table) {
-            //
+
+            $table->dropUnique(['numero_facture']);
+
+            $table->dropColumn('numero_facture');
+
         });
     }
 };

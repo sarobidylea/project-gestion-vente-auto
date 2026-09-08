@@ -23,6 +23,10 @@ class Vehicule extends Model
         'description',
         'statut',
     ];
+    public function achats()
+    {
+        return $this->hasMany(Achat::class);
+    }
 
     public function marque()
     {

@@ -16,7 +16,10 @@ class Client extends Model
         'telephone',
         'adresse',
     ];
-
+    public function achats()
+{
+    return $this->hasMany(Achat::class);
+}
     /**
      * Relation avec le compte utilisateur.
      */

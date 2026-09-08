@@ -855,14 +855,12 @@
 
         <div class="hero-buttons">
 
-            <a href="#vehicules"
-               class="hero-btn hero-btn-primary">
+            <a href="{{ route('client.vehicules') }}">
                 EXPLORER LES VÉHICULES
             </a>
 
-            <a href="#contact"
-               class="hero-btn hero-btn-secondary">
-                NOUS CONTACTER
+            <a href="{{ route('client.contact') }}">
+                 NOUS CONTACTER
             </a>
 
         </div>

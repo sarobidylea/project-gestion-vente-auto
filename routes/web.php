@@ -11,12 +11,12 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
-
 use App\Http\Controllers\ClientHomeController;
 use App\Http\Controllers\ClientVehiculeController;
 use App\Http\Controllers\ClientRendezVousController;
 use App\Http\Controllers\ClientAuthController;
 use App\Http\Controllers\ClientAccountController;
+use App\Http\Controllers\AchatController;
 
 
 /*
@@ -25,12 +25,23 @@ use App\Http\Controllers\ClientAccountController;
 |--------------------------------------------------------------------------
 */
 
-// Page d'accueil publique
+
+/*
+|--------------------------------------------------------------------------
+| ACCUEIL CLIENT
+|--------------------------------------------------------------------------
+*/
+
 Route::get('/', [ClientHomeController::class, 'index'])
     ->name('client.home');
 
 
-// Catalogue public
+/*
+|--------------------------------------------------------------------------
+| CATALOGUE CLIENT
+|--------------------------------------------------------------------------
+*/
+
 Route::get('/catalogue', [ClientVehiculeController::class, 'index'])
     ->name('client.vehicules');
 
@@ -40,18 +51,13 @@ Route::get('/catalogue/{vehicule}', [ClientVehiculeController::class, 'show'])
 
 /*
 |--------------------------------------------------------------------------
-| AUTHENTIFICATION ADMIN
+| CONTACT
 |--------------------------------------------------------------------------
 */
 
-Route::get('/login', [AuthController::class, 'showLogin'])
-    ->name('login');
-
-Route::post('/login', [AuthController::class, 'login'])
-    ->name('login.post');
-
-Route::post('/logout', [AuthController::class, 'logout'])
-    ->name('logout');
+Route::get('/contact', function () {
+    return view('client.contact');
+})->name('client.contact');
 
 
 /*
@@ -78,11 +84,84 @@ Route::post('/client-logout', [ClientAuthController::class, 'logout'])
 
 /*
 |--------------------------------------------------------------------------
+| ACHAT EN LIGNE - COTE CLIENT
+|--------------------------------------------------------------------------
+|
+| Accessible uniquement aux utilisateurs connectés.
+|
+*/
+
+Route::middleware('auth')->group(function () {
+
+    /*
+    |--------------------------------------------------------------------------
+    | Étape 1 : Checkout
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get(
+        '/vehicules/{vehicule}/acheter',
+        [AchatController::class, 'checkout']
+    )->name('client.achat.checkout');
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Étape 2 : Informations client
+    |--------------------------------------------------------------------------
+    */
+
+    Route::post(
+        '/vehicules/{vehicule}/acheter',
+        [AchatController::class, 'process']
+    )->name('client.achat.process');
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Étape 3 : Confirmation du paiement
+    |--------------------------------------------------------------------------
+    */
+
+    Route::post(
+        '/vehicules/{vehicule}/acheter/confirmer',
+        [AchatController::class, 'confirm']
+    )->name('client.achat.confirm');
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Étape 4 : Page de succès
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get(
+        '/achat/{achat}/confirmation',
+        [AchatController::class, 'success']
+    )->name('client.achat.success');
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Historique des achats du client
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get(
+        '/mes-achats',
+        [AchatController::class, 'index']
+    )->name('client.achats.index');
+
+});
+
+
+/*
+|--------------------------------------------------------------------------
 | RENDEZ-VOUS CLIENT
 |--------------------------------------------------------------------------
 |
-| Seul un utilisateur avec le rôle "client" peut
-| prendre un rendez-vous depuis le site public.
+| Seul un utilisateur connecté avec le rôle "client"
+| peut prendre un rendez-vous depuis le catalogue.
 |
 */
 
@@ -100,12 +179,38 @@ Route::middleware(['auth', 'role:client'])->group(function () {
 
 });
 
+
+/*
+|--------------------------------------------------------------------------
+| COMPTE CLIENT
+|--------------------------------------------------------------------------
+*/
+
 Route::middleware(['auth', 'role:client'])->group(function () {
 
-    Route::get('/mon-compte', [ClientAccountController::class, 'index'])
-        ->name('client.account');
+    Route::get(
+        '/mon-compte',
+        [ClientAccountController::class, 'index']
+    )->name('client.account');
 
 });
+
+
+/*
+|--------------------------------------------------------------------------
+| AUTHENTIFICATION ADMIN
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/login', [AuthController::class, 'showLogin'])
+    ->name('login');
+
+Route::post('/login', [AuthController::class, 'login'])
+    ->name('login.post');
+
+Route::post('/logout', [AuthController::class, 'logout'])
+    ->name('logout');
+
 
 /*
 |--------------------------------------------------------------------------
@@ -114,27 +219,30 @@ Route::middleware(['auth', 'role:client'])->group(function () {
 |
 | Toutes les routes administratives sont protégées par :
 |
-| 1. auth         → utilisateur connecté
-| 2. admin.access → administrateur / gestionnaire / vendeur
+| 1. auth
+| 2. admin.access
 |
 */
+
 
 Route::middleware(['auth', 'admin.access'])->group(function () {
 
 
     /*
     |--------------------------------------------------------------------------
-    | Dashboard
+    | DASHBOARD
     |--------------------------------------------------------------------------
     */
 
-    Route::get('/dashboard', [DashboardController::class, 'index'])
-        ->name('dashboard');
+    Route::get(
+        '/dashboard',
+        [DashboardController::class, 'index']
+    )->name('dashboard');
 
 
     /*
     |--------------------------------------------------------------------------
-    | Véhicules et Marques
+    | VEHICULES ET MARQUES
     |--------------------------------------------------------------------------
     |
     | Administrateur + Gestionnaire
@@ -143,146 +251,218 @@ Route::middleware(['auth', 'admin.access'])->group(function () {
 
     Route::middleware('role:administrateur,gestionnaire')->group(function () {
 
-        Route::resource('vehicules', VehiculeController::class);
+        Route::resource(
+            'vehicules',
+            VehiculeController::class
+        );
 
-        Route::resource('marques', MarqueController::class);
+        Route::resource(
+            'marques',
+            MarqueController::class
+        );
 
     });
 
 
     /*
     |--------------------------------------------------------------------------
-    | Clients
+    | CLIENTS
     |--------------------------------------------------------------------------
     */
 
-    Route::get('/clients', [ClientController::class, 'index'])
-        ->name('clients.index');
+    Route::get(
+        '/clients',
+        [ClientController::class, 'index']
+    )->name('clients.index');
 
-    Route::get('/clients/create', [ClientController::class, 'create'])
-        ->name('clients.create');
+    Route::get(
+        '/clients/create',
+        [ClientController::class, 'create']
+    )->name('clients.create');
 
-    Route::post('/clients', [ClientController::class, 'store'])
-        ->name('clients.store');
+    Route::post(
+        '/clients',
+        [ClientController::class, 'store']
+    )->name('clients.store');
 
-    Route::get('/clients/{client}', [ClientController::class, 'show'])
-        ->name('clients.show');
+    Route::get(
+        '/clients/{client}',
+        [ClientController::class, 'show']
+    )->name('clients.show');
 
 
-    // Modification / suppression des clients
+    /*
+    |--------------------------------------------------------------------------
+    | MODIFICATION / SUPPRESSION CLIENTS
+    |--------------------------------------------------------------------------
+    */
 
     Route::middleware('role:administrateur,gestionnaire')->group(function () {
 
-        Route::get('/clients/{client}/edit', [ClientController::class, 'edit'])
-            ->name('clients.edit');
+        Route::get(
+            '/clients/{client}/edit',
+            [ClientController::class, 'edit']
+        )->name('clients.edit');
 
-        Route::put('/clients/{client}', [ClientController::class, 'update'])
-            ->name('clients.update');
+        Route::put(
+            '/clients/{client}',
+            [ClientController::class, 'update']
+        )->name('clients.update');
 
-        Route::delete('/clients/{client}', [ClientController::class, 'destroy'])
-            ->name('clients.destroy');
+        Route::delete(
+            '/clients/{client}',
+            [ClientController::class, 'destroy']
+        )->name('clients.destroy');
 
     });
 
 
     /*
     |--------------------------------------------------------------------------
-    | Ventes
+    | VENTES
     |--------------------------------------------------------------------------
     */
 
-    Route::get('/ventes', [VenteController::class, 'index'])
-        ->name('ventes.index');
+    Route::get(
+        '/ventes',
+        [VenteController::class, 'index']
+    )->name('ventes.index');
 
-    Route::get('/ventes/create', [VenteController::class, 'create'])
-        ->name('ventes.create');
+    Route::get(
+        '/ventes/create',
+        [VenteController::class, 'create']
+    )->name('ventes.create');
 
-    Route::post('/ventes', [VenteController::class, 'store'])
-        ->name('ventes.store');
+    Route::post(
+        '/ventes',
+        [VenteController::class, 'store']
+    )->name('ventes.store');
 
-    Route::get('/ventes/{vente}', [VenteController::class, 'show'])
-        ->name('ventes.show');
+    Route::get(
+        '/ventes/{vente}',
+        [VenteController::class, 'show']
+    )->name('ventes.show');
 
-    Route::get('/ventes/{vente}/facture', [VenteController::class, 'facture'])
-        ->name('ventes.facture');
+    Route::get(
+        '/ventes/{vente}/facture',
+        [VenteController::class, 'facture']
+    )->name('ventes.facture');
 
 
-    // Modification / suppression des ventes
+    /*
+    |--------------------------------------------------------------------------
+    | MODIFICATION / SUPPRESSION DES VENTES
+    |--------------------------------------------------------------------------
+    */
 
     Route::middleware('role:administrateur,gestionnaire')->group(function () {
 
-        Route::get('/ventes/{vente}/edit', [VenteController::class, 'edit'])
-            ->name('ventes.edit');
+        Route::get(
+            '/ventes/{vente}/edit',
+            [VenteController::class, 'edit']
+        )->name('ventes.edit');
 
-        Route::put('/ventes/{vente}', [VenteController::class, 'update'])
-            ->name('ventes.update');
+        Route::put(
+            '/ventes/{vente}',
+            [VenteController::class, 'update']
+        )->name('ventes.update');
 
-        Route::delete('/ventes/{vente}', [VenteController::class, 'destroy'])
-            ->name('ventes.destroy');
+        Route::delete(
+            '/ventes/{vente}',
+            [VenteController::class, 'destroy']
+        )->name('ventes.destroy');
 
     });
 
 
     /*
     |--------------------------------------------------------------------------
-    | Rendez-vous ADMIN
+    | RENDEZ-VOUS ADMIN
     |--------------------------------------------------------------------------
     */
 
-    Route::get('/rendez-vous', [RendezVousController::class, 'index'])
-        ->name('rendez_vous.index');
+    Route::get(
+        '/rendez-vous',
+        [RendezVousController::class, 'index']
+    )->name('rendez_vous.index');
 
-    Route::get('/rendez-vous/create', [RendezVousController::class, 'create'])
-        ->name('rendez_vous.create');
+    Route::get(
+        '/rendez-vous/create',
+        [RendezVousController::class, 'create']
+    )->name('rendez_vous.create');
 
-    Route::post('/rendez-vous', [RendezVousController::class, 'store'])
-        ->name('rendez_vous.store');
+    Route::post(
+        '/rendez-vous',
+        [RendezVousController::class, 'store']
+    )->name('rendez_vous.store');
 
-    Route::get('/rendez-vous/{rendezVous}', [RendezVousController::class, 'show'])
-        ->name('rendez_vous.show');
+    Route::get(
+        '/rendez-vous/{rendezVous}',
+        [RendezVousController::class, 'show']
+    )->name('rendez_vous.show');
 
 
-    // Modification / suppression des rendez-vous
+    /*
+    |--------------------------------------------------------------------------
+    | MODIFICATION / SUPPRESSION DES RENDEZ-VOUS
+    |--------------------------------------------------------------------------
+    */
 
     Route::middleware('role:administrateur,gestionnaire')->group(function () {
 
-        Route::get('/rendez-vous/{rendezVous}/edit', [RendezVousController::class, 'edit'])
-            ->name('rendez_vous.edit');
+        Route::get(
+            '/rendez-vous/{rendezVous}/edit',
+            [RendezVousController::class, 'edit']
+        )->name('rendez_vous.edit');
 
-        Route::put('/rendez-vous/{rendezVous}', [RendezVousController::class, 'update'])
-            ->name('rendez_vous.update');
+        Route::put(
+            '/rendez-vous/{rendezVous}',
+            [RendezVousController::class, 'update']
+        )->name('rendez_vous.update');
 
-        Route::delete('/rendez-vous/{rendezVous}', [RendezVousController::class, 'destroy'])
-            ->name('rendez_vous.destroy');
+        Route::delete(
+            '/rendez-vous/{rendezVous}',
+            [RendezVousController::class, 'destroy']
+        )->name('rendez_vous.destroy');
 
     });
 
 
     /*
     |--------------------------------------------------------------------------
-    | Profil ADMIN
+    | PROFIL ADMIN
     |--------------------------------------------------------------------------
     */
 
-    Route::get('/profile', [ProfileController::class, 'show'])
-        ->name('profile');
+    Route::get(
+        '/profile',
+        [ProfileController::class, 'show']
+    )->name('profile');
 
-    Route::get('/profile/edit', [ProfileController::class, 'edit'])
-        ->name('profile.edit');
+    Route::get(
+        '/profile/edit',
+        [ProfileController::class, 'edit']
+    )->name('profile.edit');
 
-    Route::put('/profile', [ProfileController::class, 'update'])
-        ->name('profile.update');
+    Route::put(
+        '/profile',
+        [ProfileController::class, 'update']
+    )->name('profile.update');
 
-    Route::get('/profile/password', [ProfileController::class, 'passwordEdit'])
-        ->name('profile.password');
+    Route::get(
+        '/profile/password',
+        [ProfileController::class, 'passwordEdit']
+    )->name('profile.password');
 
-    Route::put('/profile/password', [ProfileController::class, 'passwordUpdate'])
-        ->name('profile.password.update');
+    Route::put(
+        '/profile/password',
+        [ProfileController::class, 'passwordUpdate']
+    )->name('profile.password.update');
 
 
     /*
     |--------------------------------------------------------------------------
-    | Utilisateurs
+    | UTILISATEURS
     |--------------------------------------------------------------------------
     |
     | Administrateur uniquement
@@ -291,9 +471,11 @@ Route::middleware(['auth', 'admin.access'])->group(function () {
 
     Route::middleware('role:administrateur')->group(function () {
 
-        Route::resource('users', UserController::class);
+        Route::resource(
+            'users',
+            UserController::class
+        );
 
     });
 
 });
-

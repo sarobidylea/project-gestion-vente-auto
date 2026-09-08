@@ -6,7 +6,7 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-
+use App\Models\Client;
 class User extends Authenticatable
 {
     /**
@@ -48,8 +48,8 @@ class User extends Authenticatable
      * Relation avec le client.
      */
     public function client()
-    {
-        return $this->belongsTo(Client::class);
-    }
+{
+    return $this->belongsTo(Client::class, 'client_id');
+}
 }
 
